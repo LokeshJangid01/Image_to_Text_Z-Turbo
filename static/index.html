@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text To Image</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 760px;
+      margin: 32px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    textarea, input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    img {
+      margin-top: 16px;
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Generate Image</h1>
+    <label for="prompt">Prompt</label>
+    <textarea id="prompt" rows="4" placeholder="Describe your image..."></textarea>
+
+    <label for="negativePrompt">Negative Prompt</label>
+    <input id="negativePrompt" value="blurry, low quality, distorted" />
+
+    <label for="steps">Steps</label>
+    <input id="steps" type="number" value="30" min="1" />
+
+    <label for="guidance">Guidance</label>
+    <input id="guidance" type="number" value="7.5" step="0.1" min="0" />
+
+    <button id="generateBtn">Generate</button>
+    <div class="status" id="status"></div>
+    <img id="resultImage" alt="Generated image" />
+  </div>
+
+  <script>
+    const generateBtn = document.getElementById("generateBtn");
+    const statusBox = document.getElementById("status");
+    const resultImage = document.getElementById("resultImage");
+
+    generateBtn.addEventListener("click", async () => {
+      const prompt = document.getElementById("prompt").value.trim();
+      const negativePrompt = document.getElementById("negativePrompt").value;
+      const steps = Number(document.getElementById("steps").value);
+      const guidance = Number(document.getElementById("guidance").value);
+
+      if (!prompt) {
+        statusBox.textContent = "Please enter a prompt.";
+        return;
+      }
+
+      generateBtn.disabled = true;
+      statusBox.textContent = "Generating image on CPU, this may take a while...";
+      resultImage.style.display = "none";
+
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: prompt,
+            negative_prompt: negativePrompt,
+            steps: steps,
+            guidance: guidance
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || "Request failed");
+        }
+
+        resultImage.src = data.image_url + "?t=" + Date.now();
+        resultImage.style.display = "block";
+        statusBox.textContent = "Generated: " + data.filename;
+      } catch (err) {
+        statusBox.textContent = "Error: " + err.message;
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

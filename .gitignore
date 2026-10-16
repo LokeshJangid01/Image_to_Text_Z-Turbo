@@ -1,0 +1,57 @@
+# Python environments and caches
+env/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Downloaded models and model caches
+.hf_cache/
+.cache/
+model_cache/
+models/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.bin
+.model_redownload_done*
+
+# Generated images and user uploads
+z_generated_images/
+z_uploads/
+
+# Dependencies and build output
+node_modules/
+build/
+dist/
+coverage/
+
+# Temporary files and logs
+.tmp/
+tmp/
+temp/
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+
+# Local credentials and environment settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,9 @@
+diffusers
+transformers
+accelerate
+safetensors
+sentencepiece
+Pillow
+huggingface_hub
+fastapi
+uvicorn
